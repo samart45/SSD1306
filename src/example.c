@@ -135,8 +135,32 @@ int main(int argc, char** argv) {
         mytime = time(NULL);
         tm = localtime (&mytime);
         ssd1306ClearScreen(LAYER0 | LAYER1) ;
-        strftime(time_buffer, 80,"  %H:%M:%S %x", tm);
+        strftime(time_buffer, 80,"%d/%m/%Y %H:%M:%S", tm);
         ssd1306DrawString(0,  row * 8, time_buffer, 1, WHITE, LAYER0);
+        row++;
+
+        /* CPU usage
+         * 
+         */
+        float c = GetCPULoad() ;
+        snprintf ( text_buffer, sizeof(text_buffer), "CPU loadavg: %0.2f", c );
+        printf("%s\n", text_buffer);
+        ssd1306DrawString(0,  row * 8, text_buffer, 1, WHITE, LAYER0); 
+        row++;
+        
+        /* Memory usage */
+        float m = GetMemUsage();
+        snprintf ( text_buffer, sizeof(text_buffer), "Mem used: %3.0f%%", m*100 );
+        printf("%s\n", text_buffer);
+        ssd1306DrawString(4,  2, text_buffer, 1, WHITE, LAYER0); 
+        ssd1306DrawRect(0, 0, 127, 13, INVERSE, LAYER0);
+        ssd1306FillRect(2, 2, (int)(123 * m), 9, INVERSE, LAYER0);
+        
+        /* CPU temperature  */
+        int t = GetCPUTemp() ;
+        snprintf ( text_buffer, sizeof(text_buffer), "CPU temp: %3d C", t );
+        printf("%s\n", text_buffer);
+        ssd1306DrawString(0,  row * 8, text_buffer, 1, WHITE, LAYER0); 
         row++;
 
         /* Display IP */
@@ -187,30 +211,6 @@ int main(int argc, char** argv) {
             } 
         }
         freeifaddrs(ifaddr);
-        
-        /* CPU usage
-         * 
-         */
-        float c = GetCPULoad() ;
-        snprintf ( text_buffer, sizeof(text_buffer), "CPU loadavg: %0.2f", c );
-        printf("%s\n", text_buffer);
-        ssd1306DrawString(0,  row * 8, text_buffer, 1, WHITE, LAYER0); 
-        row++;
-        
-        /* Memory usage */
-        float m = GetMemUsage();
-        snprintf ( text_buffer, sizeof(text_buffer), "Mem used: %3.0f%%", m*100 );
-        printf("%s\n", text_buffer);
-        ssd1306DrawString(4,  2, text_buffer, 1, WHITE, LAYER0); 
-        ssd1306DrawRect(0, 0, 127, 13, INVERSE, LAYER0);
-        ssd1306FillRect(2, 2, (int)(123 * m), 9, INVERSE, LAYER0);
-        
-        /* CPU temperature  */
-        int t = GetCPUTemp() ;
-        snprintf ( text_buffer, sizeof(text_buffer), "CPU temp: %3d C", t );
-        printf("%s\n", text_buffer);
-        ssd1306DrawString(0,  row * 8, text_buffer, 1, WHITE, LAYER0); 
-        row++;
 
         /* Refresh screen */
         ssd1306Refresh();
