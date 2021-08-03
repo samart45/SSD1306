@@ -150,7 +150,7 @@ int main(int argc, char** argv) {
             mytime = time(NULL);
             tm = localtime (&mytime);
             ssd1306ClearScreen(LAYER0 | LAYER1) ;
-            strftime(time_buffer, 80,"%d/%m/%Y %H:%M:%S", tm);
+            strftime(time_buffer, 80," %d/%m/%Y %H:%M:%S", tm);
             ssd1306DrawString(0,  row * 8, time_buffer, 1, WHITE, LAYER0);
             row++;
 
@@ -221,6 +221,21 @@ int main(int argc, char** argv) {
                     }
                     printf("%-8s <%s>\n", ifa->ifa_name, host);
                     snprintf ( text_buffer, sizeof(text_buffer), "%s: %s",ifa->ifa_name, host );
+                    ssd1306DrawString(0,  row * 8, text_buffer, 1, WHITE, LAYER0); 
+                    row++;
+                }  
+                if ((strncmp ("wlx", ifa->ifa_name, 3 ) == 0) && family == AF_INET) {
+                    s = getnameinfo(ifa->ifa_addr,
+                        (ifa->ifa_addr->sa_family == AF_INET) ? sizeof(struct sockaddr_in) :
+                                                sizeof(struct sockaddr_in6),
+                        host, NI_MAXHOST,
+                        NULL, 0, NI_NUMERICHOST);
+                    if (s != 0) {
+                    printf("getnameinfo() failed: %s\n", gai_strerror(s));
+                    exit(EXIT_FAILURE);
+                    }
+                    printf("%-8s <%s>\n", ifa->ifa_name, host);
+                    snprintf ( text_buffer, sizeof(text_buffer), "%0.4s: %s",ifa->ifa_name, host );
                     ssd1306DrawString(0,  row * 8, text_buffer, 1, WHITE, LAYER0); 
                     row++;
                 } 
